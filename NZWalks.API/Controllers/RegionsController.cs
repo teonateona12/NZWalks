@@ -111,5 +111,19 @@ namespace NZWalks.API.Controllers
             return Ok(regionDto);
 
         }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult Delete([FromRoute] Guid id)
+        {
+            var regionDomainModel = dbContext.Regions.Find(id);
+            if (regionDomainModel == null)
+            {
+                return NotFound();
+            }
+            dbContext.Regions.Remove(regionDomainModel);
+            dbContext.SaveChanges();
+            return Ok();
+        }
     }
 }
