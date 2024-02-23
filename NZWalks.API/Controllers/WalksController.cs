@@ -29,12 +29,24 @@ namespace NZWalks.API.Controllers
 
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var walksDomainModel = await walkRepository.GetAllAsync();
             return Ok(mapper.Map<List<WalkDto>>(walksDomainModel));
+        }
+
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        {
+            var walkDomainModal = await walkRepository.GetByIdAsync(id);
+            if(walkDomainModal == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(mapper.Map<WalkDto>(walkDomainModal));
         }
     }
 }
