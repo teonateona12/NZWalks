@@ -22,10 +22,18 @@ namespace NZWalks.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddWalksRequestDto addWalksRequestDto)
         {
-            var walkDomainModal = mapper.Map<Walk>(addWalksRequestDto);
-            await walkRepository.CreateAsync(walkDomainModal);
+            if (ModelState.IsValid)
+            {
+                var walkDomainModal = mapper.Map<Walk>(addWalksRequestDto);
+                await walkRepository.CreateAsync(walkDomainModal);
 
-            return Ok(mapper.Map<WalkDto>(walkDomainModal));
+                return Ok(mapper.Map<WalkDto>(walkDomainModal));
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+           
 
         }
 
@@ -53,13 +61,21 @@ namespace NZWalks.API.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
-            var walkDomainModel = mapper.Map<Walk>(updateWalkRequestDto);
-            walkDomainModel = await walkRepository.UpdateAsync(id, walkDomainModel);
-            if(walkDomainModel == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                var walkDomainModel = mapper.Map<Walk>(updateWalkRequestDto);
+                walkDomainModel = await walkRepository.UpdateAsync(id, walkDomainModel);
+                if (walkDomainModel == null)
+                {
+                    return NotFound();
+                }
+                return Ok(mapper.Map<WalkDto>(walkDomainModel));
             }
-            return Ok(mapper.Map<WalkDto>(walkDomainModel));
+            else
+            {
+                return BadRequest(ModelState);
+            }
+           
 
         }
 
