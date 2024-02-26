@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NZWalks.API.CustomActionFilters;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
@@ -20,21 +21,14 @@ namespace NZWalks.API.Controllers
             this.walkRepository = walkRepository;
         }
         [HttpPost]
+        [ValidateModel]
+
         public async Task<IActionResult> Create([FromBody] AddWalksRequestDto addWalksRequestDto)
         {
-            if (ModelState.IsValid)
-            {
                 var walkDomainModal = mapper.Map<Walk>(addWalksRequestDto);
                 await walkRepository.CreateAsync(walkDomainModal);
 
                 return Ok(mapper.Map<WalkDto>(walkDomainModal));
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
-           
-
         }
 
         [HttpGet]
@@ -59,10 +53,10 @@ namespace NZWalks.API.Controllers
 
         [HttpPut]
         [Route("{id}")]
+        [ValidateModel]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
-            if (ModelState.IsValid)
-            {
+           
                 var walkDomainModel = mapper.Map<Walk>(updateWalkRequestDto);
                 walkDomainModel = await walkRepository.UpdateAsync(id, walkDomainModel);
                 if (walkDomainModel == null)
@@ -70,11 +64,7 @@ namespace NZWalks.API.Controllers
                     return NotFound();
                 }
                 return Ok(mapper.Map<WalkDto>(walkDomainModel));
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+           
            
 
         }
