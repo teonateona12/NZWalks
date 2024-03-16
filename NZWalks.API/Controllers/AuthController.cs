@@ -10,7 +10,7 @@ namespace NZWalks.API.Controllers
     {
         private readonly UserManager<IdentityUser> userManager;
 
-        public AuthController(UserManager<IdentityUser> userManager )
+        public AuthController(UserManager<IdentityUser> userManager, IToke )
         {
             this.userManager = userManager;
         }
@@ -18,8 +18,6 @@ namespace NZWalks.API.Controllers
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto )
-
-
         {
             var identityUser = new IdentityUser
             {
@@ -32,8 +30,9 @@ namespace NZWalks.API.Controllers
             {
                 if (registerRequestDto.Roles != null && registerRequestDto.Roles.Any())
                 {
-                    identityResult=await userManager.AddToRolesAsync(identityUser, registerRequestDto.Roles);
-                    if(identityResult.Succeeded )
+                    identityResult = await userManager.AddToRolesAsync(identityUser, registerRequestDto.Roles);
+
+                    if (identityResult.Succeeded )
                     {
                         return Ok("User was registered! Please login");
                     }
@@ -48,10 +47,12 @@ namespace NZWalks.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
         {
             var user = await userManager.FindByEmailAsync(loginRequestDto.Username);
+
             if( user != null ) 
             {
                 var checkPasswordResult = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
-                if(checkPasswordResult)
+
+                if (checkPasswordResult)
                 {
                     
                     return Ok();
