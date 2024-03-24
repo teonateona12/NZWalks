@@ -1,0 +1,27 @@
+﻿@model NZWalksUI.Models.DTO.RegionsDto
+<h1>Edit Region</h1>
+
+if(Model !== null){
+
+<form method="post">
+   <div class="form-group mt-3">
+        <label for="code" class="form-label">Id</label>
+        <input type="text" id="Id" class="form-control" asp-for="Id" readonly />
+    </div>
+    <div class="form-group mt-3">
+        <label for="code" class="form-label">Code</label>
+        <input type="text" id="code" class="form-control" asp-for="Code"/>
+    </div>
+    <div class="form-group mt-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" id="name" class="form-control"  asp-for="Name"/>
+    </div>
+    <div class="form-group mt-3">
+        <label for="imageURL" class="form-label">Image URL</label>
+        <input type="text" id="imageURL" class="form-control"  asp-for="RegionImageUrl"/>
+    </div>
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Edit</button>
+    </div>
+</form>
+}
