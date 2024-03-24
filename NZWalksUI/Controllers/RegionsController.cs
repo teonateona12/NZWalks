@@ -77,32 +77,53 @@ namespace NZWalksUI.Controllers
 
             return View(null);
         }
+        [HttpPost]
+        public async Task<IActionResult> Edit(RegionsDto request)
+        {
+            try
+            {
+                var client = httpClientFactory.CreateClient();
+
+                var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"https://localhost:7160/api/regions/{request.Id}");
+                httpRequest.Content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+                var httpResponse = await client.SendAsync(httpRequest);
+                httpResponse.EnsureSuccessStatusCode();
+
+                var responseStream = await httpResponse.Content.ReadAsStreamAsync();
+                var response = await JsonSerializer.DeserializeAsync<RegionsDto>(responseStream);
+
+                if (response != null)
+                {
+                    return RedirectToAction("Index", "Regions");
+                }
+                else
+                {
+                    return View();
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
 
         [HttpPost]
-        public async Task<IActionResult> Edit (RegionsDto request)
+        public async Task<IActionResult> Delete (RegionsDto request)
         {
             var client = httpClientFactory.CreateClient();
 
-            var httpRequest = new HttpRequestMessage()
-            {
-                Method = HttpMethod.Put,
-                RequestUri = new Uri($"https://localhost:7160/api/regions/{request.Id}"),
-                Content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"),
-            };
+            var response = await client.DeleteAsync($"https://localhost:7160/api/regions/{request.Id}");
 
-            var httpResponse = await client.SendAsync(httpRequest);
-            httpResponse.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
-            var response = await httpResponse.Content.ReadFromJsonAsync<RegionsDto>();
+            return RedirectToAction("Index", "Regions");
 
-            if(response != null)
-            {
-                return RedirectToAction("Index", "Regions");
-            }
-
-            return View();
         }
 
     }
+
+
 }
  
