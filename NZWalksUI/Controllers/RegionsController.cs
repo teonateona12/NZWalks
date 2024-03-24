@@ -11,6 +11,7 @@ namespace NZWalksUI.Controllers
         {
             this.httpClientFactory = httpClientFactory;
         }
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             List<RegionsDto> response = new List<RegionsDto>();
@@ -24,6 +25,13 @@ namespace NZWalksUI.Controllers
 
             return View(response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            return View();
+        }
+
     }
 }
  
