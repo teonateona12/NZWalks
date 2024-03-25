@@ -22,22 +22,43 @@ namespace NZWalks.API.Controllers
         }
         [HttpPost]
         [ValidateModel]
-
         public async Task<IActionResult> Create([FromBody] AddWalksRequestDto addWalksRequestDto)
         {
-                var walkDomainModal = mapper.Map<Walk>(addWalksRequestDto);
-                await walkRepository.CreateAsync(walkDomainModal);
+            try
+            {
+                if (addWalksRequestDto == null)
+                {
+                    return BadRequest("Invalid request body. Please provide valid data.");
+                }
 
-                return Ok(mapper.Map<WalkDto>(walkDomainModal));
+                var walkDomainModel = mapper.Map<Walk>(addWalksRequestDto);
+                await walkRepository.CreateAsync(walkDomainModel);
+
+                var createdWalkDto = mapper.Map<WalkDto>(walkDomainModel);
+                return CreatedAtAction(nameof(GetById), new { id = createdWalkDto.Id }, createdWalkDto);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details for debugging purposes
+                Console.WriteLine($"Exception: {ex.Message}");
+                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while processing the request: {ex.Message}");
+            }
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, [FromQuery] bool? isAscending, [FromQuery] int pageNumber =1, [FromQuery] int pageSize = 1000 )
+        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, [FromQuery] bool isAscending = true, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000)
         {
-            var walksDomainModel = await walkRepository.GetAllAsync(filterOn,filterQuery, sortBy,isAscending ?? true, pageNumber, pageSize);
-            throw new Exception("This is a new exception");
-
-            return Ok(mapper.Map<List<WalkDto>>(walksDomainModel));
+            try
+            {
+                var walksDomainModel = await walkRepository.GetAllAsync(filterOn, filterQuery, sortBy, isAscending, pageNumber, pageSize);
+                return Ok(mapper.Map<List<WalkDto>>(walksDomainModel));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred: {ex.Message}");
+            }
         }
 
         [HttpGet]

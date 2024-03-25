@@ -14,10 +14,19 @@ namespace NZWalks.API.Repositories
         }
         public async Task<Walk> CreateAsync(Walk walk)
         {
-            await dbContext.Walks.AddAsync(walk);
-            await dbContext.SaveChangesAsync();
-            return walk;
+            try
+            {
+                await dbContext.Walks.AddAsync(walk);
+                await dbContext.SaveChangesAsync();
+                return walk;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred while saving changes: {ex.Message}");
+                throw;
+            }
         }
+
 
         public async Task<Walk?> DeleteAsync(Guid id)
         {
